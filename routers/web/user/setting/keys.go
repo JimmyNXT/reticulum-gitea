@@ -27,7 +27,7 @@ const (
 
 // Keys render user's SSH/GPG public keys page
 func Keys(ctx *context.Context) {
-	if user_model.IsFeatureDisabledWithLoginType(ctx.Doer, setting.UserFeatureManageSSHKeys, setting.UserFeatureManageGPGKeys) {
+	if user_model.IsFeatureDisabledWithLoginType(ctx.Doer, setting.UserFeatureManageSSHKeys, setting.UserFeatureManageGPGKeys, setting.UserFeatureManageRNSKeys) {
 		ctx.NotFound(errors.New("keys setting is not allowed to be changed"))
 		return
 	}
@@ -148,6 +148,36 @@ func KeysPost(ctx *context.Context) {
 			keyIDs = keyIDs[:len(keyIDs)-2]
 		}
 		ctx.Flash.Success(ctx.Tr("settings.add_gpg_key_success", keyIDs))
+		ctx.Redirect(setting.AppSubURL + "/user/settings/keys")
+	case "rns":
+		if user_model.IsFeatureDisabledWithLoginType(ctx.Doer, setting.UserFeatureManageRNSKeys) {
+			ctx.NotFound(errors.New("rns keys setting is not allowed to be visited"))
+			return
+		}
+
+		key, err := asymkey_model.AddRNSKey(ctx, ctx.Doer.ID, form.Title, form.Content)
+		if err != nil {
+			ctx.Data["HasRNSError"] = true
+			switch {
+			case asymkey_model.IsErrRNSIdentityAlreadyUsed(err):
+				loadKeysData(ctx)
+				ctx.Data["Err_Content"] = true
+				ctx.RenderWithErrDeprecated(ctx.Tr("settings.rns_identity_used"), tplSettingsKeys, &form)
+			case asymkey_model.IsErrKeyNameAlreadyUsed(err):
+				loadKeysData(ctx)
+				ctx.Data["Err_Title"] = true
+				ctx.RenderWithErrDeprecated(ctx.Tr("settings.rns_name_used"), tplSettingsKeys, &form)
+			case asymkey_model.IsErrRNSInvalidIdentityHash(err):
+				loadKeysData(ctx)
+				ctx.Data["Err_Content"] = true
+				ctx.RenderWithErrDeprecated(ctx.Tr("settings.rns_key_invalid_hash"), tplSettingsKeys, &form)
+			default:
+				ctx.ServerError("AddRNSKey", err)
+			}
+			return
+		}
+		audit.Record(ctx, audit_model.UserKeyRNSAdd, ctx.Doer, "rns_identity_hash", key.IdentityHash)
+		ctx.Flash.Success(ctx.Tr("settings.add_rns_key_success", key.Name))
 		ctx.Redirect(setting.AppSubURL + "/user/settings/keys")
 	case "verify_gpg":
 		token := asymkey_model.VerificationToken(ctx.Doer, 1)
@@ -302,6 +332,24 @@ func DeleteKey(ctx *context.Context) {
 			return
 		}
 		ctx.Flash.Success(ctx.Tr("settings.ssh_key_deletion_success"))
+	case "rns":
+		if user_model.IsFeatureDisabledWithLoginType(ctx.Doer, setting.UserFeatureManageRNSKeys) {
+			ctx.JSONError("rns keys setting is not allowed to be visited")
+			return
+		}
+		key, err := asymkey_model.GetRNSKeyForUserByID(ctx, ctx.Doer.ID, ctx.FormInt64("id"))
+		if err != nil && !asymkey_model.IsErrKeyNotExist(err) {
+			ctx.ServerError("GetRNSKeyForUserByID", err)
+			return
+		}
+		if err := asymkey_model.DeleteRNSKey(ctx, ctx.Doer, ctx.FormInt64("id")); err != nil {
+			ctx.JSONError("Failed to delete RNS key")
+			return
+		}
+		if key != nil {
+			audit.Record(ctx, audit_model.UserKeyRNSRemove, ctx.Doer, "rns_identity_hash", key.IdentityHash)
+		}
+		ctx.Flash.Success(ctx.Tr("settings.rns_key_deletion_success"))
 	case "principal":
 		if err := asymkey_service.DeletePublicKey(ctx, ctx.Doer, ctx.FormInt64("id")); err != nil {
 			ctx.JSONError("Failed to delete SSH principal key")
@@ -364,4 +412,14 @@ func loadKeysData(ctx *context.Context) {
 
 	ctx.Data["VerifyingID"] = ctx.FormString("verify_gpg")
 	ctx.Data["VerifyingFingerprint"] = ctx.FormString("verify_ssh")
+
+	rnsKeys, err := db.Find[asymkey_model.RNSKey](ctx, asymkey_model.FindRNSKeyOptions{
+		ListOptions: db.ListOptionsAll,
+		OwnerID:     ctx.Doer.ID,
+	})
+	if err != nil {
+		ctx.ServerError("ListRNSKeys", err)
+		return
+	}
+	ctx.Data["RNSKeys"] = rnsKeys
 }

@@ -372,6 +372,7 @@ func TestUserSettingsKeys(t *testing.T) {
 
 		AssertHTMLElement(t, doc, "#add-ssh-button", true)
 		AssertHTMLElement(t, doc, "#add-gpg-key-panel", true)
+		AssertHTMLElement(t, doc, "#add-rns-key-panel", true)
 	})
 
 	t.Run("ssh keys disabled", func(t *testing.T) {
@@ -388,6 +389,7 @@ func TestUserSettingsKeys(t *testing.T) {
 
 		AssertHTMLElement(t, doc, "#add-ssh-button", false)
 		AssertHTMLElement(t, doc, "#add-gpg-key-panel", true)
+		AssertHTMLElement(t, doc, "#add-rns-key-panel", true)
 	})
 
 	t.Run("gpg keys disabled", func(t *testing.T) {
@@ -404,12 +406,30 @@ func TestUserSettingsKeys(t *testing.T) {
 
 		AssertHTMLElement(t, doc, "#add-ssh-button", true)
 		AssertHTMLElement(t, doc, "#add-gpg-key-panel", false)
+		AssertHTMLElement(t, doc, "#add-rns-key-panel", true)
 	})
 
-	t.Run("ssh & gpg keys disabled", func(t *testing.T) {
+	t.Run("rns keys disabled", func(t *testing.T) {
 		defer tests.PrintCurrentTest(t)()
 
-		WithDisabledFeatures(t, setting.UserFeatureManageSSHKeys, setting.UserFeatureManageGPGKeys)
+		WithDisabledFeatures(t, setting.UserFeatureManageRNSKeys)
+
+		session := loginUser(t, "user2")
+		req := NewRequest(t, "GET", "/user/settings/keys")
+		resp := session.MakeRequest(t, req, http.StatusOK)
+		doc := NewHTMLParser(t, resp.Body)
+
+		assertNavbar(t, doc)
+
+		AssertHTMLElement(t, doc, "#add-ssh-button", true)
+		AssertHTMLElement(t, doc, "#add-gpg-key-panel", true)
+		AssertHTMLElement(t, doc, "#add-rns-key-panel", false)
+	})
+
+	t.Run("ssh & gpg & rns keys disabled", func(t *testing.T) {
+		defer tests.PrintCurrentTest(t)()
+
+		WithDisabledFeatures(t, setting.UserFeatureManageSSHKeys, setting.UserFeatureManageGPGKeys, setting.UserFeatureManageRNSKeys)
 
 		session := loginUser(t, "user2")
 		req := NewRequest(t, "GET", "/user/settings/keys")

@@ -1131,6 +1131,29 @@
         },
         "description": "PushMirrorList"
       },
+      "RNSKey": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RNSKey"
+            }
+          }
+        },
+        "description": "RNSKey"
+      },
+      "RNSKeyList": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/RNSKey"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "description": "RNSKeyList"
+      },
       "Reaction": {
         "content": {
           "application/json": {
@@ -4708,6 +4731,27 @@
           }
         },
         "title": "CreatePushMirrorOption represents need information to create a push mirror of a repository.",
+        "type": "object",
+        "x-go-package": "gitea.dev/modules/structs"
+      },
+      "CreateRNSKeyOption": {
+        "description": "CreateRNSKeyOption options to create a Reticulum identity key",
+        "properties": {
+          "identity_hash": {
+            "description": "The Reticulum identity hash (32 hexadecimal characters)",
+            "type": "string",
+            "x-go-name": "IdentityHash"
+          },
+          "name": {
+            "description": "The name of the RNS key\n\nmax size: 50",
+            "type": "string",
+            "x-go-name": "Name"
+          }
+        },
+        "required": [
+          "name",
+          "identity_hash"
+        ],
         "type": "object",
         "x-go-package": "gitea.dev/modules/structs"
       },
@@ -9324,6 +9368,44 @@
             "description": "Whether to sync on every commit",
             "type": "boolean",
             "x-go-name": "SyncOnCommit"
+          }
+        },
+        "type": "object",
+        "x-go-package": "gitea.dev/modules/structs"
+      },
+      "RNSKey": {
+        "description": "RNSKey represents a Reticulum identity key",
+        "properties": {
+          "created_at": {
+            "description": "The date and time when the RNS key was created",
+            "format": "date-time",
+            "type": "string",
+            "x-go-name": "Created"
+          },
+          "id": {
+            "description": "The unique identifier of the RNS key",
+            "format": "int64",
+            "type": "integer",
+            "x-go-name": "ID"
+          },
+          "identity_hash": {
+            "description": "The Reticulum identity hash",
+            "type": "string",
+            "x-go-name": "IdentityHash"
+          },
+          "name": {
+            "description": "The name of the RNS key",
+            "type": "string",
+            "x-go-name": "Name"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/User"
+          },
+          "updated_at": {
+            "description": "The date and time when the RNS key was updated",
+            "format": "date-time",
+            "type": "string",
+            "x-go-name": "Updated"
           }
         },
         "type": "object",
@@ -36556,6 +36638,146 @@
         ]
       }
     },
+    "/user/rns_keys": {
+      "get": {
+        "operationId": "userCurrentListRNSKeys",
+        "parameters": [
+          {
+            "description": "page number of results to return (1-based)",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "page size of results",
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/RNSKeyList"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          }
+        },
+        "summary": "List the authenticated user's Reticulum identities",
+        "tags": [
+          "user"
+        ]
+      },
+      "post": {
+        "operationId": "userCurrentPostRNSKey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRNSKeyOption"
+              }
+            }
+          },
+          "x-originalParamName": "Form"
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/RNSKey"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/validationError"
+          }
+        },
+        "summary": "Create a Reticulum identity",
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/user/rns_keys/{id}": {
+      "delete": {
+        "operationId": "userCurrentDeleteRNSKey",
+        "parameters": [
+          {
+            "description": "id of key to delete",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/empty"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/notFound"
+          }
+        },
+        "summary": "Remove a Reticulum identity",
+        "tags": [
+          "user"
+        ]
+      },
+      "get": {
+        "operationId": "userCurrentGetRNSKey",
+        "parameters": [
+          {
+            "description": "id of key to get",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/RNSKey"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/notFound"
+          }
+        },
+        "summary": "Get a Reticulum identity",
+        "tags": [
+          "user"
+        ]
+      }
+    },
     "/user/settings": {
       "get": {
         "operationId": "getUserSettings",
@@ -37475,6 +37697,50 @@
           }
         },
         "summary": "List the repos owned by the given user",
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/users/{username}/rns_keys": {
+      "get": {
+        "operationId": "userListRNSKeys",
+        "parameters": [
+          {
+            "description": "username of the user whose Reticulum identity list is to be obtained",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "page number of results to return (1-based)",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "page size of results",
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/RNSKeyList"
+          },
+          "404": {
+            "$ref": "#/components/responses/notFound"
+          }
+        },
+        "summary": "List the given user's Reticulum identities",
         "tags": [
           "user"
         ]

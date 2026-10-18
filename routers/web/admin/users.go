@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	asymkey_model "gitea.dev/models/asymkey"
 	audit_model "gitea.dev/models/audit"
 	"gitea.dev/models/auth"
 	"gitea.dev/models/db"
@@ -351,6 +352,16 @@ func ViewUser(ctx *context.Context) {
 		ctx.ServerError("FindOrgs", err)
 		return
 	}
+
+	rnsKeys, rnsTotal, err := db.FindAndCount[asymkey_model.RNSKey](ctx, asymkey_model.FindRNSKeyOptions{
+		OwnerID: u.ID,
+	})
+	if err != nil {
+		ctx.ServerError("ListRNSKeys", err)
+		return
+	}
+	ctx.Data["RNSKeys"] = rnsKeys
+	ctx.Data["RNSKeysTotal"] = int(rnsTotal)
 
 	if u.IsTypeBot() {
 		ctx.Data["BotAccessTokens"] = user_setting.NewAccessTokensPanel(ctx, u, ctx.Link+"/access_tokens")

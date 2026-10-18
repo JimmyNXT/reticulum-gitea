@@ -182,6 +182,11 @@ func deleteUser(ctx context.Context, u *user_model.User, purge bool) (err error)
 		return fmt.Errorf("deleteGPGKeys: %w", err)
 	}
 	// ***** END: GPGPublicKey *****
+	// ***** START: RNSKey *****
+	if _, err = db.DeleteByBean(ctx, &asymkey_model.RNSKey{OwnerID: u.ID}); err != nil {
+		return fmt.Errorf("deleteRNSKeys: %w", err)
+	}
+	// ***** END: RNSKey *****
 
 	// Clear assignee.
 	if _, err = db.DeleteByBean(ctx, &issues_model.IssueAssignees{AssigneeID: u.ID}); err != nil {

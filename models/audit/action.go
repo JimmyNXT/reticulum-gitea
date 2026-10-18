@@ -104,6 +104,8 @@ var (
 	UserKeyPrincipalRemove          = define("user:key:principal:remove", "Removed principal key {key} of user {scope}.")
 	UserKeyGPGAdd                   = define("user:key:gpg:add", "Added GPG key {gpg_key_id} for user {scope}.")
 	UserKeyGPGRemove                = define("user:key:gpg:remove", "Removed GPG key {gpg_key_id} of user {scope}.")
+	UserKeyRNSAdd                   = define("user:key:rns:add", "Added Reticulum identity {rns_identity_hash} for user {scope}.")
+	UserKeyRNSRemove                = define("user:key:rns:remove", "Removed Reticulum identity {rns_identity_hash} of user {scope}.")
 	UserSecretAdd                   = define("user:secret:add", "Added secret {secret} to user {scope}.")
 	UserSecretUpdate                = define("user:secret:update", "Updated secret {secret} of user {scope}.")
 	UserSecretRemove                = define("user:secret:remove", "Removed secret {secret} from user {scope}.")

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"testing"
 
 	audit_model "gitea.dev/models/audit"
@@ -83,8 +84,17 @@ func TestAdminViewUser(t *testing.T) {
 	defer tests.PrepareTestEnv(t)()
 
 	session := loginUser(t, "user1")
-	req := NewRequest(t, "GET", "/-/admin/users/1")
-	session.MakeRequest(t, req, http.StatusOK)
+	req := NewRequest(t, "GET", "/-/admin/users/2")
+	resp := session.MakeRequest(t, req, http.StatusOK)
+	doc := NewHTMLParser(t, resp.Body)
+	rnsHeaders := doc.Find("h4.ui.top.attached.header").FilterFunction(func(_ int, s *goquery.Selection) bool {
+		return strings.Contains(s.Text(), "Reticulum Identities")
+	})
+	assert.Equal(t, 1, rnsHeaders.Length())
+	// user2 owns the fixture RNS key, shown in the segment right after the header
+	rnsSegment := rnsHeaders.NextAllFiltered(".ui.attached.segment").First()
+	assert.Equal(t, "test-rns", rnsSegment.Find(".item-main b").First().Text())
+	assert.Equal(t, "1234567890abcdef1234567890abcdef", strings.TrimSpace(rnsSegment.Find(".item-main span").First().Text()))
 
 	session = loginUser(t, "user2")
 	req = NewRequest(t, "GET", "/-/admin/users/1")

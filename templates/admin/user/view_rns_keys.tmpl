@@ -1,0 +1,17 @@
+<div class="flex-divided-list items-with-main">
+	{{range .RNSKeys}}
+		<div class="item">
+			<div class="item-main">
+				<div class="flex-text-block">
+					<b>{{.Name}}</b>
+				</div>
+				<div class="flex-text-block">
+					<span style="font-family: monospace;">{{.IdentityHash}}</span>
+				</div>
+				<div class="flex-text-block">
+					<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}}</i>
+				</div>
+			</div>
+		</div>
+	{{end}}
+</div>
