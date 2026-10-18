@@ -1,0 +1,67 @@
+<h4 class="ui top attached header">
+	{{ctx.Locale.Tr "settings.manage_rns_keys"}}
+	<div class="ui right">
+		<button type="button" class="ui primary tiny show-panel toggle button" data-panel="#add-rns-key-panel">{{ctx.Locale.Tr "settings.add_key"}}</button>
+	</div>
+</h4>
+<div class="ui attached segment">
+	<div class="{{if not .HasRNSError}}tw-hidden{{end}} tw-mb-4" id="add-rns-key-panel">
+		<form class="ui form{{if .HasRNSError}} error{{end}}" action="{{.Link}}" method="post">
+			<div class="field {{if .Err_Title}}error{{end}}">
+				<label for="rns-key-title">{{ctx.Locale.Tr "settings.key_name"}}</label>
+				<input id="rns-key-title" name="title" value="{{.title}}" required maxlength="50">
+			</div>
+			<div class="field {{if .Err_Content}}error{{end}}">
+				<label for="rns-key-content">{{ctx.Locale.Tr "settings.rns_key_hash"}}</label>
+				<input id="rns-key-content" name="content" placeholder="{{ctx.Locale.Tr "settings.key_content_rns_placeholder"}}" required value="{{.content}}">
+			</div>
+			<input name="type" type="hidden" value="rns">
+			<button type="submit" class="ui primary button">
+				{{ctx.Locale.Tr "settings.add_key"}}
+			</button>
+			<button type="button" class="ui hide-panel button" data-panel="#add-rns-key-panel">
+				{{ctx.Locale.Tr "cancel"}}
+			</button>
+		</form>
+	</div>
+	<div class="flex-divided-list items-with-main">
+		<div class="item">
+			<p>
+				{{ctx.Locale.Tr "settings.rns_desc"}}
+			</p>
+		</div>
+		{{range .RNSKeys}}
+			<div class="item">
+				<div class="item-leading">
+					{{svg "octicon-server" 32}}
+				</div>
+				<div class="item-main">
+					<div class="item-body">
+						<b>{{ctx.Locale.Tr "settings.key_name"}}:</b> {{.Name}}
+					</div>
+					<div class="item-body">
+						<b>{{ctx.Locale.Tr "settings.rns_key_hash"}}:</b> <span style="font-family: monospace;">{{.IdentityHash}}</span>
+					</div>
+					<div class="item-body">
+						<i>{{ctx.Locale.Tr "settings.added_on" (DateUtils.AbsoluteShort .CreatedUnix)}}</i>
+					</div>
+				</div>
+				<div class="item-trailing">
+					<button type="button" class="ui red tiny button link-action" data-modal-confirm="#delete-rns" data-url="{{$.Link}}/delete?type=rns&id={{.ID}}">
+						{{ctx.Locale.Tr "remove"}}
+					</button>
+				</div>
+			</div>
+		{{end}}
+	</div>
+	<div class="ui small modal" id="delete-rns">
+		<div class="header">
+			{{svg "octicon-trash"}}
+			{{ctx.Locale.Tr "settings.rns_key_deletion"}}
+		</div>
+		<div class="content">
+			<p>{{ctx.Locale.Tr "settings.rns_key_deletion_desc"}}</p>
+		</div>
+		{{template "base/modal_actions_confirm" .}}
+	</div>
+</div>

@@ -5,7 +5,10 @@
 		{{end}}
 		{{template "user/settings/keys_principal" .}}
 		{{if not ($.UserDisabledFeatures.Contains "manage_gpg_keys")}}
-		{{template "user/settings/keys_gpg" .}}
+			{{template "user/settings/keys_gpg" .}}
+		{{end}}
+		{{if not ($.UserDisabledFeatures.Contains "manage_rns_keys")}}
+			{{template "user/settings/keys_rns" .}}
 		{{end}}
 	</div>
 {{template "user/settings/layout_footer" .}}

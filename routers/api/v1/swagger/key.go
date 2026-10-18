@@ -35,6 +35,20 @@ type swaggerResponseGPGKeyList struct {
 	Body []api.GPGKey `json:"body"`
 }
 
+// RNSKey
+// swagger:response RNSKey
+type swaggerResponseRNSKey struct {
+	// in:body
+	Body api.RNSKey `json:"body"`
+}
+
+// RNSKeyList
+// swagger:response RNSKeyList
+type swaggerResponseRNSKeyList struct {
+	// in:body
+	Body []api.RNSKey `json:"body"`
+}
+
 // DeployKey
 // swagger:response DeployKey
 type swaggerResponseDeployKey struct {

@@ -23,6 +23,12 @@
 			<div class="ui attached segment">
 				{{template "admin/user/view_emails" .}}
 			</div>
+			<h4 class="ui top attached header tw-mt-4">
+				{{ctx.Locale.Tr "admin.rns_keys"}} ({{ctx.Locale.Tr "admin.total" .RNSKeysTotal}})
+			</h4>
+			<div class="ui attached segment">
+				{{template "admin/user/view_rns_keys" .}}
+			</div>
 		</div>
 	</div>
 	{{if .BotAccessTokens}}

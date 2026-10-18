@@ -1141,6 +1141,7 @@ func Routes() *web.Router {
 			m.Group("/{username}", func() {
 				m.Get("/keys", user.ListPublicKeys)
 				m.Get("/gpg_keys", user.ListGPGKeys)
+				m.Get("/rns_keys", user.ListRNSKeys)
 
 				m.Get("/followers", user.ListFollowers)
 				m.Group("/following", func() {
@@ -1237,6 +1238,14 @@ func Routes() *web.Router {
 			}, rejectPublicOnly())
 			m.Get("/gpg_key_token", rejectPublicOnly(), user.GetVerificationToken)
 			m.Post("/gpg_key_verify", rejectPublicOnly(), bind(api.VerifyGPGKeyOption{}), user.VerifyUserGPGKey)
+
+			// (admin:rns_key scope)
+			m.Group("/rns_keys", func() {
+				m.Combo("").Get(user.ListMyRNSKeys).
+					Post(bind(api.CreateRNSKeyOption{}), user.CreateRNSKey)
+				m.Combo("/{id}").Get(user.GetRNSKey).
+					Delete(user.DeleteRNSKey)
+			}, rejectPublicOnly())
 
 			// (repo scope)
 			m.Combo("/repos", tokenRequiresScopes(auth_model.AccessTokenScopeCategoryRepository)).Get(user.ListMyRepos).

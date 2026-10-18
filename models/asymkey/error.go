@@ -4,6 +4,7 @@
 package asymkey
 
 import (
+	"errors"
 	"fmt"
 
 	"gitea.dev/modules/util"
@@ -233,4 +234,31 @@ func (err ErrSSHInvalidTokenSignature) Error() string {
 
 func (err ErrSSHInvalidTokenSignature) Unwrap() error {
 	return util.ErrInvalidArgument
+}
+
+// ErrRNSIdentityAlreadyUsed represents a "RNSIdentityAlreadyUsed" kind of error.
+type ErrRNSIdentityAlreadyUsed struct {
+	IdentityHash string
+}
+
+// IsErrRNSIdentityAlreadyUsed checks if an error is a ErrRNSIdentityAlreadyUsed.
+func IsErrRNSIdentityAlreadyUsed(err error) bool {
+	_, ok := err.(ErrRNSIdentityAlreadyUsed)
+	return ok
+}
+
+func (err ErrRNSIdentityAlreadyUsed) Error() string {
+	return "RNS identity hash already used: " + err.IdentityHash
+}
+
+func (err ErrRNSIdentityAlreadyUsed) Unwrap() error {
+	return util.ErrAlreadyExist
+}
+
+// ErrRNSInvalidIdentityHash is returned when the provided identity hash is invalid
+var ErrRNSInvalidIdentityHash = util.ErrorWrap(util.ErrInvalidArgument, "invalid RNS identity hash")
+
+// IsErrRNSInvalidIdentityHash checks if an error is a ErrRNSInvalidIdentityHash.
+func IsErrRNSInvalidIdentityHash(err error) bool {
+	return errors.Is(err, ErrRNSInvalidIdentityHash)
 }

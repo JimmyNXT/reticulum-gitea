@@ -20,6 +20,7 @@ var validUserFeatures = container.SetOf(
 	UserFeatureDeletion,
 	UserFeatureManageSSHKeys,
 	UserFeatureManageGPGKeys,
+	UserFeatureManageRNSKeys,
 	UserFeatureManageMFA,
 	UserFeatureManageCredentials,
 	UserFeatureChangeUsername,
@@ -49,6 +50,7 @@ const (
 	UserFeatureDeletion          = "deletion"
 	UserFeatureManageSSHKeys     = "manage_ssh_keys"
 	UserFeatureManageGPGKeys     = "manage_gpg_keys"
+	UserFeatureManageRNSKeys     = "manage_rns_keys"
 	UserFeatureManageMFA         = "manage_mfa"
 	UserFeatureManageCredentials = "manage_credentials"
 	UserFeatureChangeUsername    = "change_username"
