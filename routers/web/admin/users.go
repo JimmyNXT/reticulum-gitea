@@ -347,21 +347,19 @@ func ViewUser(ctx *context.Context) {
 	ctx.Data["Emails"] = emails
 	ctx.Data["EmailsTotal"] = len(emails)
 
+	rnsIdentities, count, err := db.FindAndCount[asymkey_model.RNSIdentity](ctx, asymkey_model.FindRNSIdentityOptions{OwnerID: u.ID})
+	if err != nil {
+		ctx.ServerError("FindRNSIdentities", err)
+		return
+	}
+	ctx.Data["RNSIdentities"] = rnsIdentities
+	ctx.Data["RNSIdentitiesTotal"] = int(count)
+
 	ctx.Data["UserOrgs"], err = org_model.GetUserOrganizations(ctx, u.ID)
 	if err != nil {
 		ctx.ServerError("FindOrgs", err)
 		return
 	}
-
-	rnsKeys, rnsTotal, err := db.FindAndCount[asymkey_model.RNSKey](ctx, asymkey_model.FindRNSKeyOptions{
-		OwnerID: u.ID,
-	})
-	if err != nil {
-		ctx.ServerError("ListRNSKeys", err)
-		return
-	}
-	ctx.Data["RNSKeys"] = rnsKeys
-	ctx.Data["RNSKeysTotal"] = int(rnsTotal)
 
 	if u.IsTypeBot() {
 		ctx.Data["BotAccessTokens"] = user_setting.NewAccessTokensPanel(ctx, u, ctx.Link+"/access_tokens")

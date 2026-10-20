@@ -888,30 +888,30 @@ func ToGPGKey(key *asymkey_model.GPGKey) *api.GPGKey {
 	}
 }
 
-// ToRNSKey converts models.RNSKey to api.RNSKey
-func ToRNSKey(ctx context.Context, key *asymkey_model.RNSKey, doer *user_model.User) *api.RNSKey {
-	rnsKey := &api.RNSKey{
-		ID:           key.ID,
-		Name:         key.Name,
-		IdentityHash: key.IdentityHash,
-		Created:      key.CreatedUnix.AsTime(),
-		Updated:      key.UpdatedUnix.AsTime(),
-	}
-	if doer.IsAdmin || doer.ID == key.OwnerID {
-		owner, err := user_model.GetUserByID(ctx, key.OwnerID)
-		if err == nil {
-			rnsKey.Owner = ToUser(ctx, owner, doer)
-		}
-	}
-	return rnsKey
-}
-
 // ToGPGKeyEmail convert models.EmailAddress to api.GPGKeyEmail
 func ToGPGKeyEmail(email *user_model.EmailAddress) *api.GPGKeyEmail {
 	return &api.GPGKeyEmail{
 		Email:    email.Email,
 		Verified: email.IsActivated,
 	}
+}
+
+// ToRNSIdentity convert asymkey_model.RNSIdentity to api.RNSIdentity
+func ToRNSIdentity(ctx context.Context, key *asymkey_model.RNSIdentity, doer *user_model.User) *api.RNSIdentity {
+	apiKey := &api.RNSIdentity{
+		ID:           key.ID,
+		Name:         key.Name,
+		IdentityHash: key.IdentityHash,
+		Created:      key.CreatedUnix.AsTime(),
+		Updated:      key.UpdatedUnix.AsTime(),
+	}
+	if doer != nil && (doer.IsAdmin || doer.ID == key.OwnerID) {
+		owner, err := user_model.GetUserByID(ctx, key.OwnerID)
+		if err == nil {
+			apiKey.Owner = ToUser(ctx, owner, doer)
+		}
+	}
+	return apiKey
 }
 
 // ToGitHook convert git.Hook to api.GitHook

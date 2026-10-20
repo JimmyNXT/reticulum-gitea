@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 			"gpg_key_import.yml",
 			"user.yml",
 			"email_address.yml",
-			"rns_key.yml",
+			"rns_identity.yml",
 		},
 	})
 }

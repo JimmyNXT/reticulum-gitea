@@ -236,7 +236,7 @@ func (err ErrSSHInvalidTokenSignature) Unwrap() error {
 	return util.ErrInvalidArgument
 }
 
-// ErrRNSIdentityAlreadyUsed represents a "RNSIdentityAlreadyUsed" kind of error.
+// ErrRNSIdentityAlreadyUsed represents an "RNSIdentityAlreadyUsed" kind of error.
 type ErrRNSIdentityAlreadyUsed struct {
 	IdentityHash string
 }
@@ -255,7 +255,7 @@ func (err ErrRNSIdentityAlreadyUsed) Unwrap() error {
 	return util.ErrAlreadyExist
 }
 
-// ErrRNSInvalidIdentityHash is returned when the provided identity hash is invalid
+// ErrRNSInvalidIdentityHash represents an invalid Reticulum identity hash.
 var ErrRNSInvalidIdentityHash = util.ErrorWrap(util.ErrInvalidArgument, "invalid RNS identity hash")
 
 // IsErrRNSInvalidIdentityHash checks if an error is a ErrRNSInvalidIdentityHash.

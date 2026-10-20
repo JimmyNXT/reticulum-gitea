@@ -182,11 +182,12 @@ func deleteUser(ctx context.Context, u *user_model.User, purge bool) (err error)
 		return fmt.Errorf("deleteGPGKeys: %w", err)
 	}
 	// ***** END: GPGPublicKey *****
-	// ***** START: RNSKey *****
-	if _, err = db.DeleteByBean(ctx, &asymkey_model.RNSKey{OwnerID: u.ID}); err != nil {
-		return fmt.Errorf("deleteRNSKeys: %w", err)
+
+	// ***** START: RNSIdentity *****
+	if _, err = db.DeleteByBean(ctx, &asymkey_model.RNSIdentity{OwnerID: u.ID}); err != nil {
+		return fmt.Errorf("deleteRNSIdentities: %w", err)
 	}
-	// ***** END: RNSKey *****
+	// ***** END: RNSIdentity *****
 
 	// Clear assignee.
 	if _, err = db.DeleteByBean(ctx, &issues_model.IssueAssignees{AssigneeID: u.ID}); err != nil {

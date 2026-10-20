@@ -17,6 +17,7 @@ import (
 	"gitea.dev/modules/log"
 	"gitea.dev/modules/markup"
 	"gitea.dev/modules/markup/external"
+	"gitea.dev/modules/rngit"
 	"gitea.dev/modules/setting"
 	"gitea.dev/modules/ssh"
 	"gitea.dev/modules/storage"
@@ -147,6 +148,7 @@ func InitWebInstalled(ctx context.Context) {
 
 	// Booting long running goroutines.
 	mustInitCtx(ctx, gitproxy_service.Run) // must start before mirror/migration services spawn git
+	mustInitCtx(ctx, rngit.Run)
 	mustInit(indexer_service.Init)
 
 	mirror_service.InitSyncMirrors()

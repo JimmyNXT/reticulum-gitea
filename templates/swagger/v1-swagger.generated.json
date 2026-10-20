@@ -11870,6 +11870,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "423": {
+            "$ref": "#/responses/repoArchivedError"
           }
         }
       },
@@ -11929,6 +11932,9 @@
           },
           "412": {
             "$ref": "#/responses/error"
+          },
+          "423": {
+            "$ref": "#/responses/repoArchivedError"
           }
         }
       }
@@ -13089,6 +13095,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "423": {
+            "$ref": "#/responses/repoArchivedError"
           }
         }
       },
@@ -13144,6 +13153,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "423": {
+            "$ref": "#/responses/repoArchivedError"
           }
         }
       },
@@ -13189,6 +13201,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "423": {
+            "$ref": "#/responses/repoArchivedError"
           }
         }
       }
@@ -13247,6 +13262,9 @@
           },
           "422": {
             "$ref": "#/responses/validationError"
+          },
+          "423": {
+            "$ref": "#/responses/repoArchivedError"
           }
         }
       }
@@ -23747,7 +23765,7 @@
         }
       }
     },
-    "/user/rns_keys": {
+    "/user/rns_identities": {
       "get": {
         "produces": [
           "application/json"
@@ -23755,31 +23773,11 @@
         "tags": [
           "user"
         ],
-        "summary": "List the authenticated user's Reticulum identities",
-        "operationId": "userCurrentListRNSKeys",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "page number of results to return (1-based)",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "page size of results",
-            "name": "limit",
-            "in": "query"
-          }
-        ],
+        "summary": "List the Reticulum identities of the authenticated user",
+        "operationId": "userCurrentListRNSIdentities",
         "responses": {
           "200": {
-            "$ref": "#/responses/RNSKeyList"
-          },
-          "401": {
-            "$ref": "#/responses/unauthorized"
-          },
-          "403": {
-            "$ref": "#/responses/forbidden"
+            "$ref": "#/responses/RNSIdentityList"
           }
         }
       },
@@ -23793,29 +23791,20 @@
         "tags": [
           "user"
         ],
-        "summary": "Create a Reticulum identity",
-        "operationId": "userCurrentPostRNSKey",
+        "summary": "Create a Reticulum identity for the authenticated user",
+        "operationId": "userCurrentPostRNSIdentity",
         "parameters": [
           {
-            "name": "Form",
+            "name": "body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/CreateRNSKeyOption"
+              "$ref": "#/definitions/CreateRNSIdentityOption"
             }
           }
         ],
         "responses": {
           "201": {
-            "$ref": "#/responses/RNSKey"
-          },
-          "401": {
-            "$ref": "#/responses/unauthorized"
-          },
-          "403": {
-            "$ref": "#/responses/forbidden"
-          },
-          "404": {
-            "$ref": "#/responses/notFound"
+            "$ref": "#/responses/RNSIdentity"
           },
           "422": {
             "$ref": "#/responses/validationError"
@@ -23823,7 +23812,7 @@
         }
       }
     },
-    "/user/rns_keys/{id}": {
+    "/user/rns_identities/{id}": {
       "get": {
         "produces": [
           "application/json"
@@ -23831,13 +23820,12 @@
         "tags": [
           "user"
         ],
-        "summary": "Get a Reticulum identity",
-        "operationId": "userCurrentGetRNSKey",
+        "summary": "Get a Reticulum identity of the authenticated user",
+        "operationId": "userCurrentGetRNSIdentity",
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
-            "description": "id of key to get",
+            "description": "id of the Reticulum identity",
             "name": "id",
             "in": "path",
             "required": true
@@ -23845,13 +23833,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/RNSKey"
-          },
-          "401": {
-            "$ref": "#/responses/unauthorized"
-          },
-          "403": {
-            "$ref": "#/responses/forbidden"
+            "$ref": "#/responses/RNSIdentity"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -23859,19 +23841,15 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
         "tags": [
           "user"
         ],
-        "summary": "Remove a Reticulum identity",
-        "operationId": "userCurrentDeleteRNSKey",
+        "summary": "Delete a Reticulum identity of the authenticated user",
+        "operationId": "userCurrentDeleteRNSIdentity",
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
-            "description": "id of key to delete",
+            "description": "id of the Reticulum identity",
             "name": "id",
             "in": "path",
             "required": true
@@ -23880,12 +23858,6 @@
         "responses": {
           "204": {
             "$ref": "#/responses/empty"
-          },
-          "401": {
-            "$ref": "#/responses/unauthorized"
-          },
-          "403": {
-            "$ref": "#/responses/forbidden"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -24760,7 +24732,7 @@
         }
       }
     },
-    "/users/{username}/rns_keys": {
+    "/users/{username}/rns_identities": {
       "get": {
         "produces": [
           "application/json"
@@ -24768,35 +24740,20 @@
         "tags": [
           "user"
         ],
-        "summary": "List the given user's Reticulum identities",
-        "operationId": "userListRNSKeys",
+        "summary": "List the Reticulum identities of a user",
+        "operationId": "userListRNSIdentities",
         "parameters": [
           {
             "type": "string",
-            "description": "username of the user whose Reticulum identity list is to be obtained",
+            "description": "username of user",
             "name": "username",
             "in": "path",
             "required": true
-          },
-          {
-            "type": "integer",
-            "description": "page number of results to return (1-based)",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "page size of results",
-            "name": "limit",
-            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/RNSKeyList"
-          },
-          "404": {
-            "$ref": "#/responses/notFound"
+            "$ref": "#/responses/RNSIdentityList"
           }
         }
       }
@@ -27962,8 +27919,8 @@
       },
       "x-go-package": "gitea.dev/modules/structs"
     },
-    "CreateRNSKeyOption": {
-      "description": "CreateRNSKeyOption options to create a Reticulum identity key",
+    "CreateRNSIdentityOption": {
+      "description": "CreateRNSIdentityOption options for adding a user Reticulum identity",
       "type": "object",
       "required": [
         "name",
@@ -27971,12 +27928,12 @@
       ],
       "properties": {
         "identity_hash": {
-          "description": "The Reticulum identity hash (32 hexadecimal characters)",
+          "description": "The 32 character hexadecimal Reticulum identity hash",
           "type": "string",
           "x-go-name": "IdentityHash"
         },
         "name": {
-          "description": "The name of the RNS key\n\nmax size: 50",
+          "description": "A name for the Reticulum identity",
           "type": "string",
           "x-go-name": "Name"
         }
@@ -29462,6 +29419,11 @@
           "description": "`repo` to only allow repo-level projects, `owner` to only allow owner projects, `all` to allow both.",
           "type": "string",
           "x-go-name": "ProjectsMode"
+        },
+        "squash_merge_commit_message": {
+          "description": "set the default squash merge commit message body: \"PR_BODY\", \"COMMIT_MESSAGES\", or \"BLANK\".",
+          "type": "string",
+          "x-go-name": "SquashMergeCommitMessage"
         },
         "template": {
           "description": "either `true` to make this repository a template or `false` to make it a normal repository",
@@ -32617,29 +32579,29 @@
       },
       "x-go-package": "gitea.dev/modules/structs"
     },
-    "RNSKey": {
-      "description": "RNSKey represents a Reticulum identity key",
+    "RNSIdentity": {
+      "description": "RNSIdentity a Reticulum identity hash associated with a user",
       "type": "object",
       "properties": {
         "created_at": {
-          "description": "The date and time when the RNS key was created",
+          "description": "The date and time when the Reticulum identity was created",
           "type": "string",
           "format": "date-time",
           "x-go-name": "Created"
         },
         "id": {
-          "description": "The unique identifier of the RNS key",
+          "description": "The unique identifier of the Reticulum identity",
           "type": "integer",
           "format": "int64",
           "x-go-name": "ID"
         },
         "identity_hash": {
-          "description": "The Reticulum identity hash",
+          "description": "The 32 character hexadecimal Reticulum identity hash",
           "type": "string",
           "x-go-name": "IdentityHash"
         },
         "name": {
-          "description": "The name of the RNS key",
+          "description": "The display name of the Reticulum identity",
           "type": "string",
           "x-go-name": "Name"
         },
@@ -32647,7 +32609,7 @@
           "$ref": "#/definitions/User"
         },
         "updated_at": {
-          "description": "The date and time when the RNS key was updated",
+          "description": "The date and time when the Reticulum identity was last updated",
           "type": "string",
           "format": "date-time",
           "x-go-name": "Updated"
@@ -33189,6 +33151,10 @@
           "type": "integer",
           "format": "int64",
           "x-go-name": "Size"
+        },
+        "squash_merge_commit_message": {
+          "type": "string",
+          "x-go-name": "SquashMergeCommitMessage"
         },
         "ssh_url": {
           "type": "string",
@@ -35149,18 +35115,18 @@
         }
       }
     },
-    "RNSKey": {
-      "description": "RNSKey",
+    "RNSIdentity": {
+      "description": "RNSIdentity",
       "schema": {
-        "$ref": "#/definitions/RNSKey"
+        "$ref": "#/definitions/RNSIdentity"
       }
     },
-    "RNSKeyList": {
-      "description": "RNSKeyList",
+    "RNSIdentityList": {
+      "description": "RNSIdentityList",
       "schema": {
         "type": "array",
         "items": {
-          "$ref": "#/definitions/RNSKey"
+          "$ref": "#/definitions/RNSIdentity"
         }
       }
     },

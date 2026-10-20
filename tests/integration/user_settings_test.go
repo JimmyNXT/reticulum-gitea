@@ -372,7 +372,7 @@ func TestUserSettingsKeys(t *testing.T) {
 
 		AssertHTMLElement(t, doc, "#add-ssh-button", true)
 		AssertHTMLElement(t, doc, "#add-gpg-key-panel", true)
-		AssertHTMLElement(t, doc, "#add-rns-key-panel", true)
+		AssertHTMLElement(t, doc, "#add-rns-identity-panel", true)
 	})
 
 	t.Run("ssh keys disabled", func(t *testing.T) {
@@ -389,7 +389,7 @@ func TestUserSettingsKeys(t *testing.T) {
 
 		AssertHTMLElement(t, doc, "#add-ssh-button", false)
 		AssertHTMLElement(t, doc, "#add-gpg-key-panel", true)
-		AssertHTMLElement(t, doc, "#add-rns-key-panel", true)
+		AssertHTMLElement(t, doc, "#add-rns-identity-panel", true)
 	})
 
 	t.Run("gpg keys disabled", func(t *testing.T) {
@@ -406,13 +406,13 @@ func TestUserSettingsKeys(t *testing.T) {
 
 		AssertHTMLElement(t, doc, "#add-ssh-button", true)
 		AssertHTMLElement(t, doc, "#add-gpg-key-panel", false)
-		AssertHTMLElement(t, doc, "#add-rns-key-panel", true)
+		AssertHTMLElement(t, doc, "#add-rns-identity-panel", true)
 	})
 
-	t.Run("rns keys disabled", func(t *testing.T) {
+	t.Run("rns identities disabled", func(t *testing.T) {
 		defer tests.PrintCurrentTest(t)()
 
-		WithDisabledFeatures(t, setting.UserFeatureManageRNSKeys)
+		WithDisabledFeatures(t, setting.UserFeatureManageRNSIdentities)
 
 		session := loginUser(t, "user2")
 		req := NewRequest(t, "GET", "/user/settings/keys")
@@ -423,13 +423,13 @@ func TestUserSettingsKeys(t *testing.T) {
 
 		AssertHTMLElement(t, doc, "#add-ssh-button", true)
 		AssertHTMLElement(t, doc, "#add-gpg-key-panel", true)
-		AssertHTMLElement(t, doc, "#add-rns-key-panel", false)
+		AssertHTMLElement(t, doc, "#add-rns-identity-panel", false)
 	})
 
-	t.Run("ssh & gpg & rns keys disabled", func(t *testing.T) {
+	t.Run("ssh & gpg & rns identities disabled", func(t *testing.T) {
 		defer tests.PrintCurrentTest(t)()
 
-		WithDisabledFeatures(t, setting.UserFeatureManageSSHKeys, setting.UserFeatureManageGPGKeys, setting.UserFeatureManageRNSKeys)
+		WithDisabledFeatures(t, setting.UserFeatureManageSSHKeys, setting.UserFeatureManageGPGKeys, setting.UserFeatureManageRNSIdentities)
 
 		session := loginUser(t, "user2")
 		req := NewRequest(t, "GET", "/user/settings/keys")
