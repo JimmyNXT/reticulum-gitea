@@ -600,13 +600,15 @@ func (repo *Repository) DescriptionHTML(ctx context.Context) template.HTML {
 
 // CloneLink represents different types of clone URLs of repository.
 type CloneLink struct {
-	IsWikiRepo   bool
-	SupportSSH   bool
-	SupportHTTPS bool
+	IsWikiRepo    bool
+	SupportSSH    bool
+	SupportHTTPS  bool
+	SupportRNS    bool
 
 	SSH   string
 	HTTPS string
 	Tea   string
+	RNS   string
 }
 
 // ComposeHTTPSCloneURL returns HTTPS clone URL based on the given owner and repository name.

@@ -59,20 +59,22 @@ function initRepoCloneButtonsCombo(parent: Element) {
 
   const tabHttps = parent.querySelector('.repo-clone-https');
   const tabSsh = parent.querySelector('.repo-clone-ssh');
+  const tabRns = parent.querySelector('.repo-clone-rns');
   const tabTea = parent.querySelector('.repo-clone-tea');
   const listOpenWithEditorApps = parent.querySelector('.repo-clone-with-apps');
 
   // not every tab exists in every panel, eg: the admin may disable HTTP/SSH, and the empty repo page has no Tea CLI tab
-  const tabByScheme: Record<string, Element | null> = {https: tabHttps, ssh: tabSsh, tea: tabTea};
+  const tabByScheme: Record<string, Element | null> = {https: tabHttps, ssh: tabSsh, rns: tabRns, tea: tabTea};
   const updateClonePanelUi = function() {
     let scheme = localUserSettings.getString('repo-clone-protocol');
     // fall back to the first available tab when the preferred scheme's tab is absent (unset preference, or disabled protocol)
     if (!tabByScheme[scheme]) {
-      scheme = ['https', 'ssh', 'tea'].find((s) => tabByScheme[s]) ?? '';
+      scheme = ['https', 'ssh', 'rns', 'tea'].find((s) => tabByScheme[s]) ?? '';
     }
 
     const isHttps = scheme === 'https';
     const isSsh = scheme === 'ssh';
+    const isRns = scheme === 'rns';
     const isTea = scheme === 'tea';
 
     if (listOpenWithEditorApps) {
@@ -86,6 +88,9 @@ function initRepoCloneButtonsCombo(parent: Element) {
     }
     if (tabSsh) {
       tabSsh.classList.toggle('active', isSsh);
+    }
+    if (tabRns) {
+      tabRns.classList.toggle('active', isRns);
     }
     if (tabTea) {
       tabTea.classList.toggle('active', isTea);
@@ -116,6 +121,10 @@ function initRepoCloneButtonsCombo(parent: Element) {
   });
   tabSsh?.addEventListener('click', () => {
     localUserSettings.setString('repo-clone-protocol', 'ssh');
+    updateClonePanelUi();
+  });
+  tabRns?.addEventListener('click', () => {
+    localUserSettings.setString('repo-clone-protocol', 'rns');
     updateClonePanelUi();
   });
   tabTea?.addEventListener('click', () => {

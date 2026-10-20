@@ -5,12 +5,14 @@ package routers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"reflect"
 	"runtime"
 
 	"gitea.dev/models"
 	authmodel "gitea.dev/models/auth"
+	repo_model "gitea.dev/models/repo"
 	"gitea.dev/modules/cache"
 	"gitea.dev/modules/git"
 	"gitea.dev/modules/git/gitcmd"
@@ -38,6 +40,7 @@ import (
 	"gitea.dev/services/auth/source/oauth2"
 	"gitea.dev/services/automerge"
 	"gitea.dev/services/cron"
+	gitea_ctx "gitea.dev/services/context"
 	feed_service "gitea.dev/services/feed"
 	gitproxy_service "gitea.dev/services/gitproxy"
 	indexer_service "gitea.dev/services/indexer"
@@ -149,6 +152,17 @@ func InitWebInstalled(ctx context.Context) {
 	// Booting long running goroutines.
 	mustInitCtx(ctx, gitproxy_service.Run) // must start before mirror/migration services spawn git
 	mustInitCtx(ctx, rngit.Run)
+	gitea_ctx.CloneLinkRNS = func(repo *repo_model.Repository) string {
+		s := rngit.DefaultServer()
+		if s == nil || !setting.Rngit.Enabled || repo.IsEmpty || repo.IsMirror || repo.IsArchived {
+			return ""
+		}
+		dest := s.DestinationHash()
+		if dest == "" {
+			return ""
+		}
+		return fmt.Sprintf("rns://%s/%s/%s", dest, repo.OwnerName, repo.Name)
+	}
 	mustInit(indexer_service.Init)
 
 	mirror_service.InitSyncMirrors()

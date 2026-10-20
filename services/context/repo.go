@@ -39,6 +39,10 @@ import (
 	"github.com/editorconfig/editorconfig-core-go/v2"
 )
 
+// CloneLinkRNS optionally returns an rns:// clone URL for a repository.
+// It is set by routers to avoid an import cycle on modules/rngit.
+var CloneLinkRNS func(repo *repo_model.Repository) string
+
 // PullRequestContext contains context information for making a new pull request
 type PullRequestContext struct {
 	ctx *Context
@@ -614,7 +618,14 @@ func repoAssignmentPrepareTemplateData(ctx *Context, data *repoAssignmentPrepare
 	ctx.Repo.RepoLink = repo.Link()
 	ctx.Data["RepoLink"] = ctx.Repo.RepoLink
 	ctx.Data["FeedURL"] = ctx.Repo.RepoLink
-	ctx.Data["CloneButtonOriginLink"] = repo.CloneLink(ctx, ctx.Doer) // CloneButtonOriginLink may be rewritten to the WikiCloneLink by the router middleware
+	cloneLink := repo.CloneLink(ctx, ctx.Doer)
+	if CloneLinkRNS != nil {
+		if rns := CloneLinkRNS(repo); rns != "" {
+			cloneLink.SupportRNS = true
+			cloneLink.RNS = rns
+		}
+	}
+	ctx.Data["CloneButtonOriginLink"] = cloneLink // CloneButtonOriginLink may be rewritten to the WikiCloneLink by the router middleware
 
 	unit, err := ctx.Repo.Repository.GetUnit(ctx, unit_model.TypeExternalTracker)
 	if err == nil {

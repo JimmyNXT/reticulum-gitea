@@ -21,6 +21,8 @@ import (
 	"github.com/Quad4-Software/Reticulum-Go/pkg/rnsutil"
 )
 
+var defaultServer *Server
+
 // Server serves Gitea repositories over Reticulum using the rngit protocol.
 type Server struct {
 	ctx      context.Context
@@ -29,6 +31,11 @@ type Server struct {
 	dest     *destination.Destination
 	git      *rnsgit.GitRunner
 	stop     context.CancelFunc
+}
+
+// DefaultServer returns the global rngit server if running.
+func DefaultServer() *Server {
+	return defaultServer
 }
 
 // New builds a server, loading or creating the node identity.
@@ -101,6 +108,8 @@ func (s *Server) Start(ctx context.Context) error {
 		go s.announceLoop(annCtx, time.Duration(setting.Rngit.AnnounceInterval)*time.Minute)
 	}
 
+	defaultServer = s
+
 	log.Info("rngit: serving git repositories over Reticulum, destination=%s", s.DestinationHash())
 	return nil
 }
@@ -112,6 +121,9 @@ func (s *Server) Stop() {
 	}
 	if s.node != nil {
 		_ = s.node.Stop()
+	}
+	if defaultServer == s {
+		defaultServer = nil
 	}
 }
 
