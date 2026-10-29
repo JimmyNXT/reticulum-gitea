@@ -29,6 +29,7 @@ type Server struct {
 	identity *identity.Identity
 	node     *node.Node
 	dest     *destination.Destination
+	pageDest *destination.Destination
 	git      *rnsgit.GitRunner
 	stop     context.CancelFunc
 }
@@ -102,6 +103,13 @@ func (s *Server) Start(ctx context.Context) error {
 		log.Warn("rngit: announce failed: %v", err)
 	}
 
+	if setting.Rngit.ServeNomadNet {
+		if err := s.startPageNode(); err != nil {
+			_ = nd.Stop()
+			return err
+		}
+	}
+
 	annCtx, cancel := context.WithCancel(ctx)
 	s.stop = cancel
 	if setting.Rngit.AnnounceInterval > 0 {
@@ -129,6 +137,9 @@ func (s *Server) Stop() {
 
 // DestinationHash returns the hex destination hash clients use in rns:// URLs.
 func (s *Server) DestinationHash() string {
+	if s.dest == nil {
+		return ""
+	}
 	return hex.EncodeToString(s.dest.GetHash())
 }
 
@@ -143,6 +154,7 @@ func (s *Server) announceLoop(ctx context.Context, interval time.Duration) {
 			if err := s.dest.Announce(false, nil, nil); err != nil {
 				log.Warn("rngit: announce failed: %v", err)
 			}
+			s.announcePages()
 		}
 	}
 }
