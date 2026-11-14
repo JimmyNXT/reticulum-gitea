@@ -20,6 +20,15 @@ type RngitConfig struct {
 	// AnnounceInterval is the destination announce interval in minutes.
 	// A negative value disables announcing.
 	AnnounceInterval int
+
+	// ServeNomadNet serves repository pages on a second
+	// nomadnetwork.node destination, enforced with the same view
+	// permissions as the website and git access.
+	ServeNomadNet bool
+
+	// NomadNetName is the display name announced by the page
+	// destination. Empty uses the instance APP_NAME.
+	NomadNetName string
 }
 
 var Rngit = RngitConfig{
