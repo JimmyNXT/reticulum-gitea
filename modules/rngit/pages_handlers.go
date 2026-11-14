@@ -143,12 +143,8 @@ func (s *Server) serveRepoPage(_ string, data, _, _ []byte, remote *identity.Ide
 
 	body := func(b *strings.Builder) {
 		b.WriteString(mHeading(2) + " " + mEscape(name) + "\n\n")
-		if !r.model.IsPrivate {
-			clone := fmt.Sprintf("rns://%s/%s/%s", s.DestinationHash(), owner, name)
-			b.WriteString("`=`=Clone: " + mEscape(clone) + "\n`=``\n\n")
-		} else if clone := r.model.CloneLink(s.ctx, nil).RNS; clone != "" {
-			b.WriteString("`=`=Clone: " + mEscape(clone) + "\n`=``\n\n")
-		}
+		clone := fmt.Sprintf("rns://%s/%s/%s", s.DestinationHash(), owner, name)
+		b.WriteString("`=`=Clone: " + mEscape(clone) + "\n`=``\n\n")
 		if r.model.Description != "" {
 			b.WriteString(mEscape(r.model.Description) + "\n\n")
 		}

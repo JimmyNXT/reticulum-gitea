@@ -810,7 +810,7 @@
   "settings.ssh_principal_deletion_success": "The principal has been removed.",
   "settings.manage_rns_identities": "Manage Reticulum Identities",
   "settings.rns_identity_desc": "These Reticulum identity hashes are associated with your account. They allow pushing to and pulling from repositories over Reticulum using an <code>rns://</code> remote, without SSH.",
-  "settings.rns_identity_helper": "<strong>Need help?</strong> Print your identity hash with <code>rngit --print-identity</code> or <code>rnid -p /path/to/identity</code> and paste it above.",
+  "settings.rns_identity_helper": "<strong>Need help?</strong> Print your identity hash with <code>rngit --print-identity</code> or <code>rnid -i /path/to/identity -p</code> and paste it above.",
   "settings.rns_identity_name": "Identity Name",
   "settings.rns_identity_hash": "Identity Hash",
   "settings.rns_identity_content_placeholder": "32 hexadecimal characters, e.g. a3f2b8c1d4e5f60718293a4b5c6d7e8f",
